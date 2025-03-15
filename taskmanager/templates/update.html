@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center vh-100">
+
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6">
+            <div class="card" style="max-height: 90vh; overflow-y: auto;">
+
+                <div class="card-header">
+                    <h3>Update Task</h3>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3 row">
+                            <label class="col-sm-4 col-form-label text-end">Task Name</label>
+                            <div class="col-sm-8">
+                                {{ form.task_name }}
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-4 col-form-label text-end">Description</label>
+                            <div class="col-sm-8">
+                                {{ form.task_description }}
+                            </div>
+                        </div>
+                    
+                        <div class="mb-3 row">
+                            <label class="col-sm-4 col-form-label text-end">Due Date</label>
+                            <div class="col-sm-8">
+                                {{ form.due_date }}
+                            </div>
+                        </div>
+                    
+                        <div class="mb-3 row">
+                            <label class="col-sm-4 col-form-label text-end">Priority</label>
+                            <div class="col-sm-8">
+                                {{ form.priority }}
+                            </div>
+                        </div>
+                       
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'all_task' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            
+                            {% if form.instance.status == False %}
+                    <td>
+                        <a href="{% url 'complete'  pk=form.instance.id  %}" class="btn btn-danger btn-sm">Complete</a>
+                    </td>
+                {% else %}
+                    <td><span class="badge bg-success">Completed</span></td>
+                {% endif %}
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

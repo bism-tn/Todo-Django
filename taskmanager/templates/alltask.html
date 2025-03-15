@@ -1,0 +1,60 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Task Details</h2>
+
+    <!-- Add Task Button -->
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'addtask' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Task</a>
+    </div>
+
+    <!-- Task Table -->
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Due Date</th>
+                <th>Completed</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in data %}
+            <tr>
+                <td>{{ i.task_name }}</td>
+                <td>{{ i.task_description }}</td>
+                <td>{{ i.due_date }}</td>
+
+                {% if i.status == False %}
+                    <td>
+                        <a href="{% url 'complete' pk=i.id %}" class="btn btn-danger btn-sm">Complete</a>
+                    </td>
+                {% else %}
+                    <td><span class="badge bg-success">Completed</span></td>
+                {% endif %}
+
+                <td>
+                    <a href="{% url 'update' pk=i.id %}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'delete' pk=i.id %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No tasks available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+{% endblock %}
