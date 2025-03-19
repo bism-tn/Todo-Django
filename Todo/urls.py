@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from taskmanager.views import UserresgisterView
 from taskmanager.views import LoginView,TaskAddView,TaskdeleteView,TaskDetailView,TaskupdateView
-from taskmanager.views import TaskcompleteView,TaskreadView,Signout,Userdetails,HomeView
+from taskmanager.views import TaskcompleteView,TaskreadView,Signout,Userdetails
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('taskmanager/signup/',UserresgisterView.as_view(),name="signup"),

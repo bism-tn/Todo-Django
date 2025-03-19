@@ -16,15 +16,20 @@ from taskmanager.forms import Userform
 from taskmanager.forms import LoginForm,TaskForm,TaskUpdateForm
 from django.utils.decorators import method_decorator
 
+def is_login(fn):
+    def wrapper(request, *args, **kwargs):  # Accept extra args
+        if not request.user.is_authenticated:
+            return redirect("login")
+        return fn(request, *args, **kwargs)  # Pass args to view
+    return wrapper
 
 def is_user(fn):
-    def wrapper(request,**kwargs):
+    def wrapper(request, *args, **kwargs):  # Accept extra args
         id = kwargs.get("pk")
-        data =  Taskmodel.objects.get(id = id)
+        data = Taskmodel.objects.get(id=id)
         if data.user == request.user:
-            return fn(request,**kwargs) 
-        else:
-            return redirect("login")
+            return fn(request, *args, **kwargs)  # Pass args to view
+        return redirect("login")
     return wrapper
 
 # Create your views here.
@@ -74,7 +79,7 @@ class LoginView(View):
         if user_obj:
             login(request,user_obj)
             print("logedin")
-            return redirect("all_task")
+            return redirect("Home")
         else:
 
             form=LoginForm
@@ -82,7 +87,7 @@ class LoginView(View):
             print("not logged in")
 
             return render(request,"login.html",{"form":form})
-
+@method_decorator(is_login, name='dispatch')
 class TaskAddView(View):
 
     def get(self,request):
@@ -106,14 +111,15 @@ class TaskAddView(View):
          form = TaskForm
          return redirect("all_task")
     
-
+# @method_decorator(decorator=is_user,name="dispatch")
 class TaskreadView(View):
      def get(self,request):
         # data=Taskmodel.objects.all()
         data=Taskmodel.objects.filter(user=request.user).order_by('status')
         return render(request,"alltask.html",{"data":data})
 
-
+@method_decorator(decorator=is_user,name="dispatch")
+@method_decorator(is_login, name='dispatch')
 class TaskdeleteView(View):
     def get(self,request,**kwargs):
 
@@ -130,6 +136,7 @@ class TaskdeleteView(View):
        
 
 @method_decorator(decorator=is_user,name="dispatch")
+@method_decorator(is_login, name='dispatch')
 class TaskDetailView(View):
     def  get(self,request,**kwargs):
         id =kwargs.get("pk")
@@ -137,8 +144,8 @@ class TaskDetailView(View):
         data =Taskmodel.objects.get(id=id)
         return render(request,"details.html",{"data":data})
     
-
-@method_decorator(decorator=is_user,name="dispatch")
+@method_decorator(is_login, name='dispatch')
+@method_decorator(is_user, name='dispatch')
 class TaskupdateView(View):
 
     def get(self,request,**kwargs):
@@ -168,7 +175,8 @@ class Signout(View):
 
         return redirect("login")
     
-
+@method_decorator(is_login, name='dispatch')
+@method_decorator(decorator=is_user,name="dispatch")
 class TaskcompleteView(View):
     def get(self,request,**kwargs):
        id =  kwargs.get("pk")
@@ -176,7 +184,9 @@ class TaskcompleteView(View):
        data.complete()
             
        return redirect("all_task")
-
+    
+@method_decorator(is_login, name='dispatch') 
+# @method_decorator(decorator=is_user,name="dispatch")
 class Userdetails(View):
     def get(self,request):
         total = Taskmodel.objects.filter(user= request.user).count() 
@@ -193,7 +203,3 @@ class Userdetails(View):
         return render(request,"Home.html",{"total":total,"complete":completed,"incomplete":incomplete,"points":total_points,"High":High,"Medium":Medium,"Low":Low})
 
 
-
-class HomeView(View):
-    def get(self,request):
-        return render(request,"Home.html")
